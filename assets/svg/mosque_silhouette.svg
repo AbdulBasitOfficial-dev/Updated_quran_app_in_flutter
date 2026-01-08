@@ -1,0 +1,25 @@
+<svg width="430" height="150" viewBox="0 0 430 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Mosque Silhouette -->
+  <path d="M0 150 L0 100 L10 100 L10 80 L15 80 L15 60 L20 60 L20 50 L25 50 L25 40 L30 40 L30 50 L35 50 L35 60 L40 60 L40 80 L45 80 L45 100 L55 100 L55 150 Z" fill="currentColor"/>
+  
+  <!-- Left Minaret -->
+  <path d="M60 150 L60 70 L65 70 L65 40 L70 30 L75 40 L75 70 L80 70 L80 150 Z" fill="currentColor"/>
+  
+  <!-- Left Small Dome -->
+  <path d="M90 150 L90 90 Q110 60 130 90 L130 150 Z" fill="currentColor"/>
+  
+  <!-- Central Large Dome -->
+  <path d="M140 150 L140 80 Q215 10 290 80 L290 150 Z" fill="currentColor"/>
+  
+  <!-- Central Minaret Point -->
+  <path d="M210 60 L215 20 L220 60 Z" fill="currentColor"/>
+  
+  <!-- Right Small Dome -->
+  <path d="M300 150 L300 90 Q320 60 340 90 L340 150 Z" fill="currentColor"/>
+  
+  <!-- Right Minaret -->
+  <path d="M350 150 L350 70 L355 70 L355 40 L360 30 L365 40 L365 70 L370 70 L370 150 Z" fill="currentColor"/>
+  
+  <!-- Right Building -->
+  <path d="M380 150 L380 100 L385 100 L385 80 L390 80 L390 60 L395 60 L395 50 L400 50 L400 40 L405 40 L405 50 L410 50 L410 60 L415 60 L415 80 L420 80 L420 100 L430 100 L430 150 Z" fill="currentColor"/>
+</svg>
