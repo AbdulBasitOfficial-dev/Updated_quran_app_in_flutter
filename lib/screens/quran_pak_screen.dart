@@ -22,21 +22,21 @@ class _QuranPakScreenState extends State<QuranPakScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final ApiService _apiService = ApiService();
-  
+
   // Parah data
   List<ParahModel> _parahs = [];
   List<ParahModel> _filteredParahs = [];
   bool _isLoadingParahs = true;
-  
+
   // Surah data
   List<SurahModel> _surahs = [];
   List<SurahModel> _filteredSurahs = [];
   bool _isLoadingSurahs = true;
-  
+
   // Search controllers
   final TextEditingController _parahSearchController = TextEditingController();
   final TextEditingController _surahSearchController = TextEditingController();
-  
+
   // Scroll controllers for lazy loading
   final ScrollController _parahScrollController = ScrollController();
   final ScrollController _surahScrollController = ScrollController();
@@ -46,7 +46,7 @@ class _QuranPakScreenState extends State<QuranPakScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _loadData();
-    
+
     // Listen to search changes
     _parahSearchController.addListener(_onParahSearchChanged);
     _surahSearchController.addListener(_onSurahSearchChanged);
@@ -63,10 +63,7 @@ class _QuranPakScreenState extends State<QuranPakScreen>
   }
 
   Future<void> _loadData() async {
-    await Future.wait([
-      _loadParahs(),
-      _loadSurahs(),
-    ]);
+    await Future.wait([_loadParahs(), _loadSurahs()]);
   }
 
   Future<void> _loadParahs() async {
@@ -116,7 +113,9 @@ class _QuranPakScreenState extends State<QuranPakScreen>
         _filteredParahs = _parahs;
       } else {
         _filteredParahs = _parahs.where((parah) {
-          return parah.englishName.toLowerCase().contains(query.toLowerCase()) ||
+          return parah.englishName.toLowerCase().contains(
+                query.toLowerCase(),
+              ) ||
               parah.arabicName.contains(query) ||
               parah.number.toString().contains(query);
         }).toList();
@@ -131,7 +130,9 @@ class _QuranPakScreenState extends State<QuranPakScreen>
         _filteredSurahs = _surahs;
       } else {
         _filteredSurahs = _surahs.where((surah) {
-          return surah.englishName.toLowerCase().contains(query.toLowerCase()) ||
+          return surah.englishName.toLowerCase().contains(
+                query.toLowerCase(),
+              ) ||
               surah.name.contains(query) ||
               surah.number.toString().contains(query);
         }).toList();
@@ -141,10 +142,7 @@ class _QuranPakScreenState extends State<QuranPakScreen>
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ),
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
     );
   }
 
@@ -160,8 +158,9 @@ class _QuranPakScreenState extends State<QuranPakScreen>
     final screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor:
-          isDarkMode ? AppColors.darkBackground : AppColors.lightBackground,
+      backgroundColor: isDarkMode
+          ? AppColors.darkBackground
+          : AppColors.lightBackground,
       body: SafeArea(
         child: Column(
           children: [
@@ -210,10 +209,7 @@ class _QuranPakScreenState extends State<QuranPakScreen>
         fit: StackFit.expand,
         children: [
           // Background Image
-          Image.asset(
-            AppAssets.topHomePng,
-            fit: BoxFit.cover,
-          ),
+          Image.asset(AppAssets.topHomePng, fit: BoxFit.cover),
 
           // Back Button
           Positioned(
@@ -247,7 +243,7 @@ class _QuranPakScreenState extends State<QuranPakScreen>
                 Text(
                   AppStrings.greeting,
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 22,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
                     letterSpacing: 0.3,
@@ -261,60 +257,57 @@ class _QuranPakScreenState extends State<QuranPakScreen>
                   ),
                 ),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
 
-                // Next Prayer Time
-                Text(
-                  AppStrings.nextPrayerLabel,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w400,
-                    color: _withAlpha(Colors.white, 0.85),
-                    letterSpacing: 0.1,
-                  ),
-                ),
+                // Current Date
+                Builder(
+                  builder: (context) {
+                    final now = DateTime.now();
+                    final months = [
+                      'January',
+                      'February',
+                      'March',
+                      'April',
+                      'May',
+                      'June',
+                      'July',
+                      'August',
+                      'September',
+                      'October',
+                      'November',
+                      'December',
+                    ];
+                    final days = [
+                      'Monday',
+                      'Tuesday',
+                      'Wednesday',
+                      'Thursday',
+                      'Friday',
+                      'Saturday',
+                      'Sunday',
+                    ];
+                    final dayName = days[now.weekday - 1];
+                    final monthName = months[now.month - 1];
+                    final formattedDate =
+                        '$dayName, ${now.day} $monthName ${now.year}';
 
-                const SizedBox(height: 4),
-
-                // Prayer Time
-                Text(
-                  AppStrings.nextPrayerTime,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                    letterSpacing: 0.2,
-                    shadows: [
-                      Shadow(
-                        color: _withAlpha(Colors.black, 0.25),
-                        blurRadius: 3,
-                        offset: const Offset(0, 1),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                // Location
-                Row(
-                  children: [
-                    Icon(
-                      Icons.location_on,
-                      size: 12,
-                      color: _withAlpha(Colors.white, 0.85),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      AppStrings.location,
+                    return Text(
+                      formattedDate,
                       style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w400,
-                        color: _withAlpha(Colors.white, 0.85),
-                        letterSpacing: 0.1,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: _withAlpha(Colors.white, 0.9),
+                        letterSpacing: 0.2,
+                        shadows: [
+                          Shadow(
+                            color: _withAlpha(Colors.black, 0.25),
+                            blurRadius: 3,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ],
             ),
@@ -343,8 +336,9 @@ class _QuranPakScreenState extends State<QuranPakScreen>
             borderRadius: BorderRadius.circular(25),
           ),
           labelColor: Colors.white,
-          unselectedLabelColor:
-              isDarkMode ? Colors.white : AppColors.primaryMaroon,
+          unselectedLabelColor: isDarkMode
+              ? Colors.white
+              : AppColors.primaryMaroon,
           labelStyle: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -382,16 +376,16 @@ class _QuranPakScreenState extends State<QuranPakScreen>
           child: _isLoadingParahs
               ? SkeletonList(isDarkMode: isDarkMode)
               : _filteredParahs.isEmpty
-                  ? _buildEmptyState('No Parahs found', isDarkMode)
-                  : ListView.builder(
-                      controller: _parahScrollController,
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: _filteredParahs.length,
-                      itemBuilder: (context, index) {
-                        final parah = _filteredParahs[index];
-                        return _buildParahItem(parah, isDarkMode);
-                      },
-                    ),
+              ? _buildEmptyState('No Parahs found', isDarkMode)
+              : ListView.builder(
+                  controller: _parahScrollController,
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: _filteredParahs.length,
+                  itemBuilder: (context, index) {
+                    final parah = _filteredParahs[index];
+                    return _buildParahItem(parah, isDarkMode);
+                  },
+                ),
         ),
       ],
     );
@@ -415,16 +409,16 @@ class _QuranPakScreenState extends State<QuranPakScreen>
           child: _isLoadingSurahs
               ? SkeletonList(isDarkMode: isDarkMode)
               : _filteredSurahs.isEmpty
-                  ? _buildEmptyState('No Surahs found', isDarkMode)
-                  : ListView.builder(
-                      controller: _surahScrollController,
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: _filteredSurahs.length,
-                      itemBuilder: (context, index) {
-                        final surah = _filteredSurahs[index];
-                        return _buildSurahItem(surah, isDarkMode);
-                      },
-                    ),
+              ? _buildEmptyState('No Surahs found', isDarkMode)
+              : ListView.builder(
+                  controller: _surahScrollController,
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: _filteredSurahs.length,
+                  itemBuilder: (context, index) {
+                    final surah = _filteredSurahs[index];
+                    return _buildSurahItem(surah, isDarkMode);
+                  },
+                ),
         ),
       ],
     );
@@ -441,9 +435,7 @@ class _QuranPakScreenState extends State<QuranPakScreen>
       child: Container(
         height: 48,
         decoration: BoxDecoration(
-          color: isDarkMode
-              ? _withAlpha(Colors.white, 0.1)
-              : Colors.white,
+          color: isDarkMode ? _withAlpha(Colors.white, 0.1) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isDarkMode
@@ -508,9 +500,7 @@ class _QuranPakScreenState extends State<QuranPakScreen>
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: isDarkMode
-              ? _withAlpha(Colors.white, 0.08)
-              : Colors.white,
+          color: isDarkMode ? _withAlpha(Colors.white, 0.08) : Colors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -594,9 +584,7 @@ class _QuranPakScreenState extends State<QuranPakScreen>
         margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: isDarkMode
-              ? _withAlpha(Colors.white, 0.08)
-              : Colors.white,
+          color: isDarkMode ? _withAlpha(Colors.white, 0.08) : Colors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -676,10 +664,7 @@ class _QuranPakScreenState extends State<QuranPakScreen>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: isDarkMode
-              ? [
-                  _withAlpha(Colors.white, 0.2),
-                  _withAlpha(Colors.white, 0.1),
-                ]
+              ? [_withAlpha(Colors.white, 0.2), _withAlpha(Colors.white, 0.1)]
               : [
                   _withAlpha(AppColors.primaryMaroon, 0.12),
                   _withAlpha(AppColors.primaryMaroon, 0.06),

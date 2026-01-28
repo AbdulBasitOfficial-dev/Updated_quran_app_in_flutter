@@ -8,7 +8,7 @@ import '../models/ayah_model.dart';
 /// Uses AlQuran Cloud API (https://api.alquran.cloud/v1)
 class ApiService {
   static const String _baseUrl = 'https://api.alquran.cloud/v1';
-  
+
   // Singleton pattern
   static final ApiService _instance = ApiService._internal();
   factory ApiService() => _instance;
@@ -58,7 +58,7 @@ class ApiService {
 
     // Simulate network delay for smooth loading animation
     await Future.delayed(const Duration(milliseconds: 300));
-    
+
     _cachedParahs = ParahModel.getAllParahs();
     return _cachedParahs!;
   }
@@ -150,6 +150,38 @@ class ApiService {
     }
   }
 
+  /// Fetch Juz (Parah) translation (English)
+  Future<List<AyahModel>> getJuzTranslation(int juzNumber) async {
+    // Check cache with offset key (1000 + juzNumber to differentiate from surah)
+    final cacheKey = 1000 + juzNumber;
+    if (_cachedTranslations.containsKey(cacheKey)) {
+      return _cachedTranslations[cacheKey]!;
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/juz/$juzNumber/en.asad'),
+        headers: {'Accept': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        final juzResponse = JuzDetailResponse.fromJson(jsonData);
+        if (juzResponse.data != null) {
+          _cachedTranslations[cacheKey] = juzResponse.data!.ayahs;
+          return juzResponse.data!.ayahs;
+        }
+        throw Exception('No translation data received for Juz $juzNumber');
+      } else {
+        throw Exception(
+          'Failed to load Juz translation: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      throw Exception('Error fetching Juz translation: $e');
+    }
+  }
+
   /// Get paginated Surahs for lazy loading
   /// [page] - Page number (0-indexed)
   /// [pageSize] - Number of items per page
@@ -160,14 +192,14 @@ class ApiService {
     final allSurahs = await getSurahs();
     final startIndex = page * pageSize;
     final endIndex = (startIndex + pageSize).clamp(0, allSurahs.length);
-    
+
     if (startIndex >= allSurahs.length) {
       return [];
     }
-    
+
     // Simulate network delay for smooth loading
     await Future.delayed(const Duration(milliseconds: 200));
-    
+
     return allSurahs.sublist(startIndex, endIndex);
   }
 
@@ -181,14 +213,14 @@ class ApiService {
     final allParahs = await getParahs();
     final startIndex = page * pageSize;
     final endIndex = (startIndex + pageSize).clamp(0, allParahs.length);
-    
+
     if (startIndex >= allParahs.length) {
       return [];
     }
-    
+
     // Simulate network delay for smooth loading
     await Future.delayed(const Duration(milliseconds: 200));
-    
+
     return allParahs.sublist(startIndex, endIndex);
   }
 
@@ -196,7 +228,7 @@ class ApiService {
   Future<List<SurahModel>> searchSurahs(String query) async {
     final allSurahs = await getSurahs();
     if (query.isEmpty) return allSurahs;
-    
+
     final lowerQuery = query.toLowerCase();
     return allSurahs.where((surah) {
       return surah.englishName.toLowerCase().contains(lowerQuery) ||
@@ -209,7 +241,7 @@ class ApiService {
   Future<List<ParahModel>> searchParahs(String query) async {
     final allParahs = await getParahs();
     if (query.isEmpty) return allParahs;
-    
+
     final lowerQuery = query.toLowerCase();
     return allParahs.where((parah) {
       return parah.englishName.toLowerCase().contains(lowerQuery) ||
@@ -227,4 +259,3 @@ class ApiService {
     _cachedTranslations.clear();
   }
 }
-

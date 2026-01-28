@@ -10,10 +10,7 @@ import '../widgets/ayah_item.dart';
 class ParahDetailScreen extends StatefulWidget {
   final ParahModel parah;
 
-  const ParahDetailScreen({
-    super.key,
-    required this.parah,
-  });
+  const ParahDetailScreen({super.key, required this.parah});
 
   @override
   State<ParahDetailScreen> createState() => _ParahDetailScreenState();
@@ -27,6 +24,7 @@ class _ParahDetailScreenState extends State<ParahDetailScreen>
 
   // Data states
   List<AyahModel> _ayahs = [];
+  List<AyahModel> _translations = [];
   bool _isLoading = true;
   bool _isLoadingMore = false;
   bool _hasError = false;
@@ -61,6 +59,25 @@ class _ParahDetailScreenState extends State<ParahDetailScreen>
       setState(() {
         _currentTab = _tabController.index;
       });
+      // Load translation if not loaded yet
+      if (_currentTab == 1 && _translations.isEmpty) {
+        _loadTranslation();
+      }
+    }
+  }
+
+  Future<void> _loadTranslation() async {
+    try {
+      final translations = await _apiService.getJuzTranslation(
+        widget.parah.number,
+      );
+      if (mounted) {
+        setState(() {
+          _translations = translations;
+        });
+      }
+    } catch (e) {
+      // Silently fail for translation - show Arabic only
     }
   }
 
@@ -105,7 +122,10 @@ class _ParahDetailScreenState extends State<ParahDetailScreen>
     Future.delayed(const Duration(milliseconds: 300), () {
       if (mounted) {
         setState(() {
-          final newCount = (_displayedAyahsCount + _pageSize).clamp(0, _ayahs.length);
+          final newCount = (_displayedAyahsCount + _pageSize).clamp(
+            0,
+            _ayahs.length,
+          );
           _displayedAyahsCount = newCount;
           _hasMoreData = _displayedAyahsCount < _ayahs.length;
           _isLoadingMore = false;
@@ -125,8 +145,9 @@ class _ParahDetailScreenState extends State<ParahDetailScreen>
     final isDarkMode = brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor:
-          isDarkMode ? AppColors.darkBackground : AppColors.lightBackground,
+      backgroundColor: isDarkMode
+          ? AppColors.darkBackground
+          : AppColors.lightBackground,
       body: SafeArea(
         child: Column(
           children: [
@@ -143,8 +164,8 @@ class _ParahDetailScreenState extends State<ParahDetailScreen>
               child: _isLoading
                   ? _buildLoadingState(isDarkMode)
                   : _hasError
-                      ? _buildErrorState(isDarkMode)
-                      : _buildAyahList(isDarkMode),
+                  ? _buildErrorState(isDarkMode)
+                  : _buildAyahList(isDarkMode),
             ),
 
             // Parah Name Footer
@@ -280,8 +301,9 @@ class _ParahDetailScreenState extends State<ParahDetailScreen>
             borderRadius: BorderRadius.circular(21),
           ),
           labelColor: Colors.white,
-          unselectedLabelColor:
-              isDarkMode ? Colors.white : AppColors.primaryMaroon,
+          unselectedLabelColor: isDarkMode
+              ? Colors.white
+              : AppColors.primaryMaroon,
           labelStyle: const TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
@@ -307,8 +329,8 @@ class _ParahDetailScreenState extends State<ParahDetailScreen>
       children: [
         // Read Quran Tab
         _buildQuranReadingView(isDarkMode),
-        // Translation Tab (shows same for now - can add translation later)
-        _buildQuranReadingView(isDarkMode),
+        // Translation Tab
+        _buildTranslationView(isDarkMode),
       ],
     );
   }
@@ -343,6 +365,39 @@ class _ParahDetailScreenState extends State<ParahDetailScreen>
     );
   }
 
+  Widget _buildTranslationView(bool isDarkMode) {
+    return Column(
+      children: [
+        // Decorative Header
+        _buildDecorativeHeader(isDarkMode),
+
+        // Ayah List with Translation
+        Expanded(
+          child: ListView.builder(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.only(bottom: 20),
+            itemCount: _displayedAyahsCount + (_hasMoreData ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index >= _displayedAyahsCount) {
+                return _buildLoadingIndicator(isDarkMode);
+              }
+              final ayah = _ayahs[index];
+              final translation = index < _translations.length
+                  ? _translations[index].text
+                  : null;
+              return AyahItem(
+                ayah: ayah,
+                isDarkMode: isDarkMode,
+                showTranslation: true,
+                translationText: translation,
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildDecorativeHeader(bool isDarkMode) {
     return Container(
       margin: const EdgeInsets.all(16),
@@ -352,10 +407,7 @@ class _ParahDetailScreenState extends State<ParahDetailScreen>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: isDarkMode
-              ? [
-                  _withAlpha(Colors.white, 0.12),
-                  _withAlpha(Colors.white, 0.06),
-                ]
+              ? [_withAlpha(Colors.white, 0.12), _withAlpha(Colors.white, 0.06)]
               : [
                   _withAlpha(AppColors.primaryMaroon, 0.08),
                   _withAlpha(AppColors.primaryMaroon, 0.03),

@@ -6,6 +6,10 @@ import '../constants/app_assets.dart';
 import '../main.dart';
 import '../widgets/app_drawer.dart';
 import 'quran_pak_screen.dart';
+import 'asma_ul_husna_screen.dart';
+import 'muhammad_names_screen.dart';
+import 'six_kalma_screen.dart';
+import 'masnoon_dua_screen.dart';
 
 /// Home Screen Widget
 /// The main screen after onboarding with categories for Islamic content
@@ -17,7 +21,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentCarouselIndex = 0;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   /// Helper method to create color with alpha
@@ -53,9 +56,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
               // Hero Banner Section
               _buildHeroBanner(isDarkMode, screenSize),
-
-              // Carousel Indicators
-              _buildCarouselIndicators(isDarkMode),
 
               const SizedBox(height: 24),
 
@@ -113,33 +113,45 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Builds the Islamic date section
+  /// Builds the Islamic date section with dynamic current date
   Widget _buildIslamicDate(bool isDarkMode) {
+    final now = DateTime.now();
+    final months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    final days = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ];
+    final dayName = days[now.weekday - 1];
+    final monthName = months[now.month - 1];
+    final formattedDate = '$dayName, ${now.day} $monthName ${now.year}';
+
     return Center(
-      child: Column(
-        children: [
-          Text(
-            AppStrings.hijriDate,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: isDarkMode ? Colors.white : AppColors.textDark,
-              letterSpacing: 0.2,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            AppStrings.gregorianDate,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w400,
-              color: isDarkMode
-                  ? _withAlpha(Colors.white, 0.7)
-                  : _withAlpha(AppColors.textDark, 0.6),
-              letterSpacing: 0.1,
-            ),
-          ),
-        ],
+      child: Text(
+        formattedDate,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: isDarkMode ? Colors.white : AppColors.textDark,
+          letterSpacing: 0.2,
+        ),
       ),
     );
   }
@@ -181,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       AppStrings.greeting,
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 22,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
                         letterSpacing: 0.3,
@@ -195,91 +207,62 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
 
-                    // Next Prayer Time
-                    Text(
-                      AppStrings.nextPrayerLabel,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w400,
-                        color: _withAlpha(Colors.white, 0.85),
-                        letterSpacing: 0.1,
-                      ),
-                    ),
+                    // Current Date
+                    Builder(
+                      builder: (context) {
+                        final now = DateTime.now();
+                        final months = [
+                          'January',
+                          'February',
+                          'March',
+                          'April',
+                          'May',
+                          'June',
+                          'July',
+                          'August',
+                          'September',
+                          'October',
+                          'November',
+                          'December',
+                        ];
+                        final days = [
+                          'Monday',
+                          'Tuesday',
+                          'Wednesday',
+                          'Thursday',
+                          'Friday',
+                          'Saturday',
+                          'Sunday',
+                        ];
+                        final dayName = days[now.weekday - 1];
+                        final monthName = months[now.month - 1];
+                        final formattedDate =
+                            '$dayName, ${now.day} $monthName ${now.year}';
 
-                    const SizedBox(height: 4),
-
-                    // Prayer Time
-                    Text(
-                      AppStrings.nextPrayerTime,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                        letterSpacing: 0.2,
-                        shadows: [
-                          Shadow(
-                            color: _withAlpha(Colors.black, 0.25),
-                            blurRadius: 3,
-                            offset: const Offset(0, 1),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    // Location
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.location_on,
-                          size: 12,
-                          color: _withAlpha(Colors.white, 0.85),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          AppStrings.location,
+                        return Text(
+                          formattedDate,
                           style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w400,
-                            color: _withAlpha(Colors.white, 0.85),
-                            letterSpacing: 0.1,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: _withAlpha(Colors.white, 0.9),
+                            letterSpacing: 0.2,
+                            shadows: [
+                              Shadow(
+                                color: _withAlpha(Colors.black, 0.25),
+                                blurRadius: 3,
+                                offset: const Offset(0, 1),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+                        );
+                      },
                     ),
                   ],
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Builds carousel indicators
-  Widget _buildCarouselIndicators(bool isDarkMode) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: List.generate(
-          3,
-          (index) => Container(
-            margin: const EdgeInsets.symmetric(horizontal: 3),
-            width: _currentCarouselIndex == index ? 20 : 6,
-            height: 6,
-            decoration: BoxDecoration(
-              color: _currentCarouselIndex == index
-                  ? (isDarkMode ? Colors.white : AppColors.primaryMaroon)
-                  : (isDarkMode
-                        ? _withAlpha(Colors.white, 0.35)
-                        : _withAlpha(AppColors.primaryMaroon, 0.35)),
-              borderRadius: BorderRadius.circular(3),
-            ),
           ),
         ),
       ),
@@ -341,7 +324,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       iconPath: AppAssets.tasbiSvg,
                       isSvg: true,
                       onTap: () {
-                        // TODO: Navigate to Six Kalmah
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const SixKalmaScreen(),
+                          ),
+                        );
                       },
                     ),
 
@@ -354,7 +341,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       iconPath: AppAssets.duaSvg,
                       isSvg: true,
                       onTap: () {
-                        // TODO: Navigate to Masnoon Doin
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const MasnoonDuaScreen(),
+                          ),
+                        );
                       },
                     ),
                   ],
@@ -375,7 +366,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   title: AppStrings.allahNameTitle,
                   iconPath: AppAssets.allahNameSvg,
                   onTap: () {
-                    // TODO: Navigate to Allah Names
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const AsmaUlHusnaScreen(),
+                      ),
+                    );
                   },
                 ),
               ),
@@ -389,7 +384,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   title: AppStrings.muhammadNameTitle,
                   iconPath: AppAssets.muhammadNameSvg,
                   onTap: () {
-                    // TODO: Navigate to Muhammad Names
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const MuhammadNamesScreen(),
+                      ),
+                    );
                   },
                 ),
               ),
@@ -424,6 +423,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }) {
     return GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Container(
         height: 192,
         decoration: BoxDecoration(
@@ -474,6 +474,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }) {
     return GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Container(
         height: 90,
         decoration: BoxDecoration(
@@ -543,6 +544,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }) {
     return GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
         decoration: BoxDecoration(
